@@ -1,0 +1,175 @@
+% !TEX root = ../main.tex
+%
+% \section 生成大型项目这一章的一级标题，并让本文件中的 subsection 都归到该章编号之下。
+\section{大型项目：拆分、命令与排错}
+
+% learningbox 中的 \texttt{\textbackslash input} 用等宽字体显示命令名，\textbackslash 用来打印反斜杠本身。
+\begin{learningbox}{学习目标 / Learning goals}
+学完本章后，你将能把长文档拆成多个章节，判断 \texttt{\textbackslash input} 和相对路径的起点，
+定义不会意外覆盖已有命令的新命令，辨认常见辅助文件，并按固定顺序定位编译问题。
+\end{learningbox}
+
+% 目录树放在 codeblock 中，竖线、反引号和文件名会按原样显示，不会被当成 LaTeX 命令解释。
+\subsection{为什么拆分文件}
+
+文档变长后，把所有内容放进一个 \texttt{main.tex} 会让搜索、审阅和多人协作越来越困难。
+更稳妥的做法是让根文件集中保存文档类、宏包、全局样式、章节顺序和参考文献输出，
+再让每个章节文件只负责一个清楚的主题。这样可以单独定位内容，又不会复制全局配置。
+
+下面是本教程完成后的项目树。它位于惰性源码环境中，只展示目录关系，不会让 LaTeX
+尝试载入尚未讲解的文件。
+
+\begin{codeblock}
+latex-tutorial/
+|-- .vscode/
+|   `-- settings.json
+|-- figures/
+|   |-- example-figure.pdf
+|   `-- example-figure.tex
+|-- sections/
+|   |-- 01-getting-started.tex
+|   |-- 02-document-structure.tex
+|   |-- 03-text-formatting.tex
+|   |-- 04-tables-and-figures.tex
+|   |-- 05-mathematics.tex
+|   |-- 06-theorems-and-references.tex
+|   |-- 07-large-projects.tex
+|   `-- 08-beamer.tex
+|-- main.tex
+|-- main.pdf
+|-- beamer-demo.tex
+|-- beamer-demo.pdf
+|-- references.bib
+`-- README.md
+\end{codeblock}
+
+% \input{路径} 把目标 .tex 内容插入当前位置；路径可省略扩展名，但章节文件仍需通过 main.tex 获得导言区配置。
+\subsection{input 和主文件}
+
+根文件按阅读顺序载入章节；\verb|\input| 会把目标文件的内容插入当前位置，通常可以省略
+\texttt{.tex} 扩展名。例如，\texttt{main.tex} 中的前两章写作：
+
+\begin{codeblock}
+\input{sections/01-getting-started}
+\input{sections/02-document-structure}
+\end{codeblock}
+
+章节文件不是独立文档：它们不重复 \verb|\documentclass|、宏包或
+\verb|document| 环境。即使当前正在编辑 \texttt{sections/07-large-projects.tex}，
+也应把 \texttt{main.tex} 作为根文件编译。文件开头的编辑器提示
+\verb|% !TEX root = ../main.tex| 能帮助 LaTeX Workshop 从子文件回到正确入口；
+真正的构建结果仍由根文件中的章节顺序和全局配置决定。
+
+% \newcommand 定义新命令；[1] 表示接收一个参数，定义体中的 #1 会替换为调用 \importantterm{...} 时提供的内容。
+\subsection{自定义命令}
+
+重复出现的语义和样式可以封装成命令。\verb|[1]| 表示命令接收一个参数，定义中的
+\verb|#1| 会被调用时花括号里的内容替换。下面两行是活动内容，会实际参与本教程编译：
+
+\newcommand{\importantterm}[1]{\textcolor{TutorialBlue}{\textbf{#1}}}
+这里突出显示一个 \importantterm{重要术语}。
+
+命令必须在第一次使用之前定义；全篇共用的命令通常放在根文件导言区。
+LaTeX 还会检查新命令的名称是否已经存在。如果新名称与已有命令重名，
+它会报告命令已定义，而不会静默覆盖原行为。只有确实要修改已知命令时，
+才使用 \texttt{\textbackslash renewcommand}，并且应先确认原命令的参数形式。
+
+% \path 会按路径样式显示斜杠等字符；这里的相对路径统一从实际编译入口 main.tex 所在目录开始计算。
+\subsection{相对路径}
+
+本项目从 \texttt{main.tex} 所在的 \texttt{latex-tutorial/} 目录构建。
+根文件中的路径都从这个目录开始解释，例如：
+\begin{itemize}[leftmargin=2.6em]
+    \item \path{sections/07-large-projects} 指向章节源文件；
+    \item \path{figures/example-figure.pdf} 指向图片；
+    \item \path{references.bib} 指向文献数据库。
+\end{itemize}
+不要因为 \verb|\input| 命令写在某个子文件中，就自动把路径起点改成该子文件所在目录。
+
+\begin{warningbox}
+许多构建环境区分文件名和目录名的大小写，源码拼写必须与磁盘完全一致。
+若从子文件启动了错误的编译入口，正确路径也会失效；此时先确认根文件，再检查路径。
+\end{warningbox}
+
+% description 的可选参数调整说明列表版式；每个 \item[扩展名] 把方括号内容作为术语标签，后面正文解释其用途。
+\subsection{常见辅助文件}
+
+编译会在源文件旁生成若干中间文件。它们记录跨轮次信息，通常不应手工编辑：
+
+\begin{description}[style=nextline,leftmargin=3.2cm,font=\ttfamily]
+    \item[.aux] 保存标签、引用和其他需要下一轮读取的交叉引用信息。
+    \item[.log] 保存引擎的完整构建记录，是定位第一条有效错误的主要依据。
+    \item[.toc] 保存目录条目，下一轮编译时由 \verb|\tableofcontents| 读取。
+    \item[.out] 常由 \texttt{hyperref} 写入书签和链接相关信息。
+    \item[.bcf] 把引用和排序等控制信息交给 Biber。
+    \item[.bbl] 保存 Biber 根据 \texttt{.bib} 数据生成、供 LaTeX 读取的文献内容。
+    \item[.blg] 保存 Biber 的处理日志和书目诊断信息。
+    \item[.synctex.gz] 保存源码行与 PDF 位置的映射，支持正向和反向跳转。
+    \item[.pdf] 是最终排版输出；修改内容后应由源码重新生成，而不是直接编辑它。
+\end{description}
+
+源文件 \texttt{.tex}、文献库 \texttt{.bib} 和图片资源是项目输入，不能当作辅助文件删除。
+辅助文件虽然可以重建，但在正常增量构建中能帮助 LaTeXmk 判断依赖并减少不必要的工作。
+
+% \small 临时缩小后面的表格；tabularx 的 X 列会自动分配剩余宽度，\arraybackslash 恢复单元格末尾使用双反斜杠的能力。
+\subsection{固定排错顺序}
+
+编译器可能在一次失败后输出许多连锁信息。先处理最早一条与自己源码有关的红色错误，
+再重新构建，往往比从日志末尾倒查更有效。常见现象可以按下表缩小范围：
+
+\small
+\noindent\begin{tabularx}{\textwidth}{>{\ttfamily\raggedright\arraybackslash}p{0.25\textwidth} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+\toprule
+\normalfont\bfseries 现象 & \bfseries 首先检查 & \bfseries 常见原因 \\
+\midrule
+Undefined control sequence & 命令拼写与宏包 & 命令拼错、命令尚未定义或缺少提供它的宏包。 \\
+File not found & 路径与大小写 & 根文件不对、相对层级错误或资源没有放进项目。 \\
+Missing \} inserted & 相关行之前的花括号 & 命令参数少了右花括号，错误位置可能晚于真正缺失处。 \\
+Environment ended & \texttt{begin/end} 名称 & 环境名不一致、嵌套顺序错误或漏写结束命令。 \\
+undefined references & 标签名与构建轮次 & 标签拼错，或修改编号后还没有完成足够的编译轮次。 \\
+empty bibliography & 引用键、数据源与 Biber & 正文没有有效引用、键不匹配、文献库未载入或 Biber 未运行。 \\
+\bottomrule
+\end{tabularx}
+\normalsize
+
+% enumerate 自动生成顺序编号；nosep 由 enumitem 宏包提供，用来压缩各条目之间的额外竖直间距。
+无论具体错误名称是什么，都按下面顺序逐项检查，并在每次只改一个原因后重新构建：
+
+\begin{enumerate}[nosep]
+    \item Read the first useful red error.（阅读第一条有用的红色错误。）
+    \item Check braces.（检查花括号是否成对。）
+    \item Check begin/end names.（检查环境开始和结束名称。）
+    \item Check file paths and capitalization.（检查文件路径与大小写。）
+    \item Check required packages.（检查所需宏包。）
+    \item Rebuild references.（重新构建交叉引用和文献引用。）
+    \item Clean auxiliary files and rebuild.（清理辅助文件后重新构建。）
+\end{enumerate}
+
+% errorbox 只排版排错说明；其中的 \texttt 将错误名称显示为等宽文字，不会触发或模拟一次真实错误。
+\begin{errorbox}
+不要只看最后一行，也不要一次删除或重写大段源码。例如日志中的
+\texttt{Undefined control sequence} 只是现象名称；应回到它指向的第一处相关源码，
+判断是拼写、定义顺序还是宏包问题。修好第一处后重新编译，后续连锁错误可能会一起消失。
+\end{errorbox}
+
+% 两条终端命令放在 codeblock 中，只作为可复制文本显示；反斜杠续行和命令选项都不会在编译教程时执行。
+\subsection{清理后重新构建}
+
+交叉引用、目录或文献状态偶尔会因中断构建而过期。先保存所有源文件并正常重新构建；
+只有问题仍然存在、且日志提示旧的辅助状态时，才在项目根目录执行完整清理：
+
+\begin{codeblock}
+/Library/TeX/texbin/latexmk -C main.tex
+/Library/TeX/texbin/latexmk -synctex=1 -interaction=nonstopmode -file-line-error -xelatex main.tex
+\end{codeblock}
+
+第一条命令会移除可再生成的辅助文件和旧输出，第二条命令从 \texttt{main.tex} 重新建立
+目录、交叉引用、Biber 文献数据、SyncTeX 映射和 PDF。清理不是修复源码错误的替代品：
+如果命令拼写、花括号、环境名或路径本身有误，干净构建仍会在同一根因处失败。
+
+% resultbox 用绿色固定标题显示总结；\textbf 只加粗“章末检查”，后面的命令名用 verb 原样显示。
+\begin{resultbox}
+\textbf{章末检查：}确认项目只有明确的根文件，各章节由 \verb|\input| 载入；
+新增命令先定义后使用且名称不冲突；路径从实际构建入口解释；出现问题时先修第一条有效错误，
+最后才清理辅助文件并完整重建。
+\end{resultbox}

@@ -1,0 +1,145 @@
+% !TEX root = ../main.tex
+%
+% \section 的花括号中是要显示的一级标题；编号、目录条目和标题样式都由文档类统一生成。
+\section{文档结构：命令、环境与页面组成}
+
+% learningbox 接收一个标题参数，并把环境内部的多段正文统一放进可分页的蓝色框中。
+\begin{learningbox}{学习目标 / Learning goals}
+学完本章后，你将能区分命令、参数和环境，理解文档类、导言区与宏包的职责，
+并能组织标题、摘要、目录、章节层次和页面设置。
+\end{learningbox}
+
+% \subsection 表示二级标题；它从属于当前 section，并会自动获得类似“2.1”的编号。
+\subsection{命令、参数与环境}
+
+LaTeX 命令通常以反斜杠开始。方括号中的可选参数用来微调行为，花括号中的必选参数
+则告诉命令要处理什么内容。下面是两种通用写法；它们位于源码框中，只作为示意，
+不会被当前文档执行。
+
+% codeblock 会原样打印示例：方括号通常放可省略的选项，花括号放必须提供的参数，环境则用同名 begin 和 end 包围内容。
+\begin{codeblock}
+\command[可选参数]{必选参数}
+
+\begin{环境名}
+环境中的内容
+\end{环境名}
+\end{codeblock}
+
+在真实命令 \texttt{\textbackslash textbf\{粗体文字\}} 中，
+\texttt{textbf} 是命令名，花括号中的文字是必选参数；实际执行后得到
+\textbf{粗体文字}。花括号负责划定参数范围，本身不会显示在 PDF 中。
+
+% quote 是实际执行的引用环境，会缩进其中的段落；它与源码框里的示意环境不同，必须由同名的 begin 和 end 正确闭合。
+\begin{quote}
+环境像一间有明确入口和出口的房间：\texttt{\textbackslash begin} 打开房间，
+\texttt{\textbackslash end} 关闭房间，中间的内容按照该环境的规则排版。
+\end{quote}
+
+% errorbox 显示错误说明，内部再嵌套 codeblock；源码框中的错误列表不会运行，所以可以安全展示不匹配的环境名。
+\begin{errorbox}
+下面的列表用 \texttt{itemize} 开始，却错误地用 \texttt{enumerate} 结束：
+\begin{codeblock}
+\begin{itemize}
+    \item 第一项
+\end{enumerate}
+\end{codeblock}
+每个环境的开始名称和结束名称必须完全相同；这里应把
+\texttt{\textbackslash end\{enumerate\}} 改成
+\texttt{\textbackslash end\{itemize\}}，否则编译器会报告环境不匹配。
+\end{errorbox}
+
+% \documentclass 必须写在主文件导言区开头；方括号是类选项，最后一对花括号中的 ctexart 是文档类名称。
+\subsection{文档类和文档选项}
+
+\texttt{\textbackslash documentclass} 通常是主文件中第一条有效命令，而且一篇文档只选择
+一个文档类。这里的 \texttt{ctexart} 是适合中文短文和教程的文章类；
+\texttt{UTF8}、\texttt{12pt} 和 \texttt{a4paper} 分别指定编码、基础字号和纸张大小。
+
+% 这个 codeblock 展示两类选项：documentclass 的选项控制整篇文档，usepackage 的选项只传给 geometry 宏包。
+\begin{codeblock}
+\documentclass[UTF8,12pt,a4paper]{ctexart}
+\usepackage[left=2.6cm,right=2.6cm]{geometry}
+\end{codeblock}
+
+类选项写在文档类名之前的方括号中；若省略某个可选项，文档类会使用对应的默认值。
+不同文档类支持的选项可能不同，因此不要把某个类的专用选项机械复制到另一个类中。
+
+% 导言区位于 \documentclass 与 \begin{document} 之间，适合放宏包、全局设置和自定义命令，不放普通正文。
+\subsection{导言区与宏包}
+
+从 \texttt{\textbackslash documentclass} 之后到
+\texttt{\textbackslash begin\{document\}} 之前的区域叫作导言区。
+它适合加载宏包、定义颜色和命令、设置页边距，以及填写标题信息；导言区的配置通常不会
+作为普通正文直接打印出来，却会影响整篇文档。
+
+\texttt{\textbackslash usepackage} 用来加载宏包。例如，\texttt{geometry} 管理页面尺寸和
+页边距，本教程还在主文件中加载了数学、图片、表格、列表、颜色和超链接等宏包。
+把共享配置放在 \texttt{main.tex} 中，可以避免每个章节重复设置。
+
+% warningbox 是主文件定义的提示环境；其中的 \texttt 把 LaTeX 命令以等宽字体显示，\textbackslash 专门打印反斜杠字符。
+\begin{warningbox}
+导言区用于“设置怎样排版”，\texttt{document} 环境用于“写要排版的内容”。
+普通段落、列表和章节标题应放在 \texttt{\textbackslash begin\{document\}} 之后。
+\end{warningbox}
+
+% 标题信息先在导言区保存，再由正文中的 \maketitle 输出；abstract 和 tableofcontents 必须位于 document 环境内部。
+\subsection{标题、摘要与目录}
+
+标题、作者和日期通常在导言区声明；进入 \texttt{document} 环境后，
+\texttt{\textbackslash maketitle} 才把这些信息排版出来。摘要由
+\texttt{abstract} 环境包围，\texttt{\textbackslash tableofcontents} 根据带编号的章节命令
+生成目录。
+
+% 示例中的 \today 不接参数，会在每次编译时产生当天日期；\maketitle 必须放在标题、作者和日期定义之后。
+\begin{codeblock}
+\title{文档标题}
+\author{作者姓名}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+这里是摘要。
+\end{abstract}
+\tableofcontents
+\end{document}
+\end{codeblock}
+
+\texttt{\textbackslash today} 会在编译时生成当天日期。目录依赖辅助文件记录章节与页码，
+所以刚加入或移动标题后，通常需要再次编译；本项目的 LaTeXmk 会自动完成所需轮次。
+
+% 不带星号的 \subsection 会同时生成可见标题、自动编号和目录记录，通常不需要手写章节数字。
+\subsection{章节层次与自动编号}
+
+LaTeX 使用 \texttt{\textbackslash section}、\texttt{\textbackslash subsection} 和
+\texttt{\textbackslash subsubsection} 表示从高到低的章节层次。本小节就是一个实际执行的
+\texttt{subsection}：LaTeX 自动给它编号，并把它加入目录，而无需手工填写数字或页码。
+
+% 命令名后的星号关闭自动编号和目录写入；花括号中的文字仍会作为小标题显示在 PDF 中。
+\subsubsection*{无编号的小标题示例}
+
+这行标题由实际的 \texttt{\textbackslash subsubsection*} 命令生成。带星号的标题
+\textbf{没有编号，也不会自动加入目录}。如果确实需要让无编号标题出现在目录中，
+应再使用专门的目录命令，而不是手写一个看似正确的页码。
+
+% resultbox 用固定标题显示编译结果；其中修改章节结构后，LaTeXmk 会通过多轮编译自动更新编号、目录和页码。
+\begin{resultbox}
+使用章节命令后，新增、删除或移动小节时，LaTeX 会重新计算编号、目录和页码。
+因此标题文字中不应手写“2.1”之类的序号。
+\end{resultbox}
+
+% 本小节中的 \clearpage 会先输出等待排版的图片和表格再换页；\pagestyle{plain} 选择只显示页码的基础页面样式。
+\subsection{页面设置}
+
+纸张大小可以由文档类选项指定，页边距则常交给 \texttt{geometry} 宏包统一管理。
+本教程在主文件中使用 A4 纸，并分别设置上下左右页边距；这样各章节共享同一版心，
+不需要在章节文件里重复调用宏包。
+
+需要从新页开始时，可以使用 \texttt{\textbackslash clearpage}。它不仅换页，还会先安排
+尚未排出的浮动图片和表格。\texttt{\textbackslash pagestyle\{plain\}} 则使用带页码的简洁页眉页脚样式。
+
+% 这里再次使用 learningbox，但传入“本章检查”作为标题；同一个环境可在不同位置反复调用。
+\begin{learningbox}{本章检查 / Chapter check}
+我能解释命令参数与环境边界，指出导言区和正文的分界，按正确顺序组织标题、摘要与目录，
+并说明普通标题与星号标题在编号和目录行为上的差别。
+\end{learningbox}

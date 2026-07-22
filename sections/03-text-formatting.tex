@@ -1,0 +1,164 @@
+% !TEX root = ../main.tex
+%
+% \section 创建本章一级标题；标题中的冒号是普通文字，整个花括号内容都会显示并写入目录。
+\section{文字排版：段落、字体与列表}
+
+% learningbox 的标题参数写在环境名后的花括号中，正文写在 begin 与 end 之间，可包含自动换行的多个句子。
+\begin{learningbox}{学习目标 / Learning goals}
+学完本章后，你将能用空行划分自然段，控制文字样式与字号，正确输入特殊字符，
+选择合适的列表环境，并使用语义清楚的间距命令。
+\end{learningbox}
+
+% 普通源码换行通常只产生一个空格，空白行才开始新段落；\subsection 只负责生成本小节标题。
+\subsection{段落、换行与分页}
+
+在 LaTeX 源码中，一个空行会结束当前自然段并开始下一段；同一自然段中的普通换行通常只被
+当作一个空格。下面的源码保留了一个空行，因此会产生两个自然段，而最后两行仍属于同一段。
+
+% codeblock 保留源码中的空白行，因此能直观看出第一个空白行怎样把示例分成两个自然段。
+\begin{codeblock}
+这是第一个自然段。
+
+这是第二个自然段。
+LaTeX 会自动换行。
+\end{codeblock}
+
+需要在同一自然段内明确换行时，可以使用 \verb|\\|；只想建议一个较合适的分页位置时，
+可以使用 \verb|\pagebreak[2]|。\verb|\newpage| 会立即开始新页，\verb|\clearpage|
+还会先排出等待中的浮动图片和表格。分页命令应按内容结构使用，不要靠连续空行把文字推到下一页。
+
+% 这里的双反斜杠是真正执行的强制换行命令；它只结束当前行，并不像空白行那样开始新段落。
+\begin{resultbox}
+第一行在这里结束。\\
+第二行由 \verb|\\| 主动开始，但两行仍属于同一个自然段。
+\end{resultbox}
+
+% \textbf、\textit、\underline 和 \textcolor 都只处理花括号内的文字；textcolor 还要先给出颜色名称参数。
+\subsection{粗体、斜体、下划线与颜色}
+
+文字样式命令只影响花括号中的内容，因此可以在一个句子里安全地组合普通文字和强调文字：
+
+\textbf{粗体文字}，
+\textit{斜体文字}，
+\underline{带下划线的文字}，
+\textcolor{TutorialBlue}{蓝色强调文字}。
+
+粗体适合强调关键词，斜体常用于术语或轻度强调。下划线和颜色应少量使用，以免喧宾夺主；
+颜色名称 \texttt{TutorialBlue} 已在 \texttt{main.tex} 中统一定义。
+
+% \small、\normalsize 和 \Large 是声明式字号命令；用外层花括号建立局部分组，可让字号在右花括号处恢复。
+\subsection{字号与作用范围}
+
+花括号可以建立局部作用范围。下面三个字号各自在自己的分组中生效，分组结束后正文恢复正常字号：
+
+{\small 小号文字}\quad
+{\normalsize 正常文字}\quad
+{\Large 较大文字}
+
+如果漏掉分组，像 \verb|\Large| 这样的声明式命令会继续影响后面的文字。教程正文通常应保持
+统一基础字号，只在标题、图注或确有层次需要的位置调整大小。
+
+% #、$、%、&、_、花括号和反斜杠在源码中有特殊用途；要把它们打印出来，必须使用表中的转义写法。
+\subsection{特殊字符}
+
+有些字符在 LaTeX 源码中负责命令、注释、参数或对齐，不能直接当作普通正文输入。
+下表左列用 \verb|\verb| 原样显示源字符，右列执行转义命令并给出真正的排版结果。
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+源字符 & 可见输出 \\
+\midrule
+\verb|#|  & \# \\
+\verb|$|  & \$ \\
+\verb|%|  & \% \\
+\verb|&|  & \& \\
+\verb|_|  & \_ \\
+\verb|{|  & \{ \\
+\verb|}|  & \} \\
+\verb|\|  & \textbackslash{} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% 百分号从当前位置起注释掉同一源码行的剩余内容；放进 codeblock 后它只作为字符显示，不会真的截断教程源码。
+\begin{errorbox}
+原始的 \verb|%| 会把同一源码行中它后面的内容变成注释。例如下面一行本来想输出完整句子，
+但“今天有效”不会进入 PDF：
+\begin{codeblock}
+折扣是 20% 今天有效
+\end{codeblock}
+要输出百分号，应写成 \verb|\%|，例如“折扣是 20\% 今天有效”。
+\end{errorbox}
+
+% itemize 生成项目符号，enumerate 自动编号，description 用 \item[术语] 指定说明标题；列表环境还可以相互嵌套。
+\subsection{无序、编号与描述列表}
+
+无序列表适合没有先后关系的并列内容：
+\begin{itemize}
+    \item 段落由空行划分。
+    \item 字体命令用花括号限定范围。
+    \item 特殊字符需要正确转义。
+\end{itemize}
+
+编号列表适合必须按顺序完成的步骤：
+\begin{enumerate}
+    \item 保存 \texttt{.tex} 源文件。
+    \item 使用 XeLaTeX 编译文档。
+    \item 打开 PDF 检查结果。
+\end{enumerate}
+
+描述列表适合解释一组术语：
+\begin{description}
+    \item[源码] 写在 \texttt{.tex} 文件中的文字与命令。
+    \item[引擎] 读取源码并完成排版的程序，例如 XeLaTeX。
+    \item[输出] 编译后得到的 PDF 及辅助文件。
+\end{description}
+
+嵌套列表可以表达从属关系，但这里保持最多两层，避免层级过深：
+\begin{itemize}
+    \item 正文元素
+    \begin{itemize}
+        \item 段落与列表
+        \item 字体与间距
+    \end{itemize}
+    \item 页面元素
+\end{itemize}
+
+% codeblock 属于原样环境，内部的命令、空格和换行只会被打印；不能把需要实际排版的正文放进这里。
+\subsection{原样显示代码}
+
+本教程的 \texttt{codeblock} 环境由 \texttt{fvextra} 提供。环境内的反斜杠、花括号和
+空格都按源码原样显示，所以适合教学示例；其中的命令是惰性的，不会改变当前文档。
+
+\begin{codeblock}
+\textbf{这行只显示源码，不会变成粗体。}
+\begin{itemize}
+    \item 这也不会生成真正的列表。
+\end{itemize}
+\end{codeblock}
+
+短小的行内源码可以用 \verb|\verb|，较长或包含多行的源码则应使用 \texttt{codeblock}。
+
+% 波浪号 ~ 产生不可断行空格；\,、\quad 和 \hspace{长度} 分别提供不同大小或指定大小的水平间距。
+\subsection{空格和间距的正确用法}
+
+LaTeX 会把源码中的连续普通空格合并。需要不可断行的词组时使用波浪号，例如
+\verb|第~3~章|；需要明确的水平间距时，可以选择与含义相符的命令。
+
+\begin{resultbox}
+紧邻文字；小间距：甲\,乙；中等间距：甲\quad 乙；指定间距：甲\hspace{1em}乙。
+\end{resultbox}
+
+% LaTeX 会合并连续普通空格；需要对齐时应使用表格或对齐环境，需要间距时使用专门的间距命令。
+\begin{warningbox}
+重复输入多个空格不能可靠地对齐文字，因为 LaTeX 会合并普通空格，而且不同内容的宽度也不同。
+需要成行成列时，应使用表格或对齐环境；只需要局部间距时，再使用 \verb|\,|、
+\verb|\quad| 或 \verb|\hspace{...}| 等专用命令。
+\end{warningbox}
+
+% 章末再次调用 learningbox；环境内部可以正常使用普通文字、逗号以及 \texttt 等行内命令。
+\begin{learningbox}{本章检查 / Chapter check}
+我能用空行开始新段落，控制样式与字号的作用范围，正确输出特殊字符，选择三类基本列表，
+在代码框中安全展示源码，并用表格、对齐环境或专用命令处理间距。
+\end{learningbox}

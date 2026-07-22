@@ -1,0 +1,28 @@
+# macOS metadata
+.DS_Store
+
+# LaTeX build intermediates
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.ilg
+*.ind
+*.idx
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+*.xdv
+
+# Keep final PDFs from the build directory, but ignore its other outputs.
+build/*
+!build/*.pdf

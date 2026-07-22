@@ -1,0 +1,107 @@
+% !TEX root = ../main.tex
+%
+% \section 创建一级标题，LaTeX 会自动编号，并把标题文字写入目录。
+\section{入门：从源文件到 PDF}
+
+% learningbox 是主文件定义的自定义环境；紧跟在环境名后的花括号会作为彩色框标题。
+\begin{learningbox}{学习目标 / Learning goals}
+学完本章后，你将理解 TeX、LaTeX、XeLaTeX、Biber 和 LaTeXmk 这五种工具的关系，
+并能在 VS Code 中编译一个最小中文文档。
+\end{learningbox}
+
+% \subsection 创建 section 下面的二级标题，编号和目录层级都会由 LaTeX 自动处理。
+\subsection{为什么使用 LaTeX}
+
+LaTeX 把“写什么”和“长什么样”分开：你在纯文本源文件中标记标题、段落、公式、
+图片和引用，再由编译工具统一生成 PDF。这种工作方式特别适合结构较长、公式较多、
+需要交叉引用或多人使用同一版式的文档。源文件可以逐行阅读、搜索和比较，版式规则则
+集中写在主文件的导言区，因而修改一处就能保持全文一致。
+
+% 这条 \subsection 命令开始工具说明小节；标题中的顿号只是普通文字，不影响命令语法。
+\subsection{TeX、LaTeX、XeLaTeX、Biber 与 LaTeXmk}
+
+\noindent\begin{tabularx}{\textwidth}{>{\bfseries}l X X}
+\toprule
+工具 & 作用 & 本项目中的位置 \\
+\midrule
+TeX & 最底层的排版系统，提供命令展开、断行和分页等基础能力。 & 其他工具共同依赖的排版基础。 \\
+LaTeX & 建立在 TeX 之上的文档系统，提供文档类、章节、列表和交叉引用。 & \texttt{main.tex} 与各章节所使用的标记语言。 \\
+XeLaTeX & 能直接处理 Unicode 和系统字体的 LaTeX 编译引擎。 & 负责把本项目的中文源文件编译成 PDF。 \\
+Biber & 读取 \texttt{.bib} 数据库并生成参考文献所需信息。 & 处理根目录中的 \texttt{references.bib}。 \\
+LaTeXmk & 根据依赖关系自动重复运行 XeLaTeX，并在需要时调用 Biber。 & LaTeX Workshop 构建配方调用的自动化工具。 \\
+\bottomrule
+\end{tabularx}
+
+% 最小文档只需要 \documentclass 和一对 document 环境；其他宏包与设置都可按需要逐步添加。
+\subsection{第一个最小文档}
+
+把下面内容保存为一个 \texttt{.tex} 文件，并使用 XeLaTeX 编译：
+
+\begin{codeblock}
+\documentclass[UTF8]{ctexart}
+
+\begin{document}
+你好，LaTeX！
+\end{document}
+\end{codeblock}
+
+
+% resultbox 是主文件预先定义的无参数环境；\raggedright 只在盒子内部取消两端对齐，避免窄框出现过大的字间距。
+\begin{resultbox}
+\raggedright
+生成的 PDF 中只会出现“你好，LaTeX！”。\texttt{\textbackslash documentclass} 以及
+\texttt{\textbackslash begin\{document\}} 之前的导言区用于配置文档，它们本身不会被打印到 PDF。
+\end{resultbox}
+
+% 本小节标题由 \subsection 生成；下面的操作步骤属于正文，会按当前章节样式连续排版。
+\subsection{在 VS Code 中编译和预览}
+
+% 下一段使用 \texttt 显示命令名和快捷键；该命令只改变花括号内文字的字体，不会执行其中的内容。
+本项目已经启用自动保存（auto save）和保存后自动构建（build on save）。停止输入约 1 秒后，
+VS Code 会自动保存当前源文件；这次保存会触发默认的第一条配方
+\texttt{latexmk (XeLaTeX)}，由 LaTeXmk 调用 XeLaTeX 更新 PDF。若想立即手工构建，
+仍可按 \texttt{Command+Option+B}。
+
+\begin{enumerate}
+    \item 打开项目文件夹（open the project folder）。
+    \item 打开 \texttt{main.tex}（open \texttt{main.tex}）。
+    \item 修改一小处，停止输入约 1 秒，等待自动保存和默认 XeLaTeX 配方完成构建。
+    \item 按 \texttt{Command+Option+V}，在 VS Code 右侧打开 PDF 预览。
+    \item 把光标放在一行源码中，按 \texttt{Command+Option+J}，从源码定位到 PDF 对应位置。
+    \item 在 PDF 中双击一段文字，返回左侧对应的源码位置。
+\end{enumerate}
+
+% SyncTeX 由编译参数 synctex=1 生成位置映射；源码到 PDF 和 PDF 回源码都读取同一个 .synctex.gz 文件。
+按 \texttt{Command+Option+J} 的“源码到 PDF”和双击 PDF 的“PDF 回到源码”合称
+SyncTeX（源码与 PDF 同步定位）。前者也叫正向定位（forward search），后者也叫反向定位
+（inverse search）；它们让你不必在长源码和长 PDF 中重复滚动查找同一段内容。
+
+% warningbox 会把 begin 与 end 之间的内容放进橙色提示框；环境边界必须成对且名称完全相同。
+\begin{warningbox}
+\texttt{.tex} 文件是可以用编辑器打开和修改的纯文本；PDF 是编译后生成的输出文件。
+要修改内容，应编辑 \texttt{.tex} 源文件并重新编译，而不是直接修改 PDF。
+\end{warningbox}
+
+% codeblock 按原样显示内部字符，因此其中故意缺少右花括号的 \textbf 只会被打印，不会作为真正命令执行。
+\begin{errorbox}
+下面的命令缺少一个右花括号：
+\begin{codeblock}
+\textbf{这行少了右花括号
+\end{codeblock}
+编译器随后可能报告很多连锁错误。请先找到并修复日志中第一条有用的错误信息，
+然后重新编译；后面的错误往往会随之消失。
+\end{errorbox}
+
+% itemize 创建无序列表；可选参数 label={$\square$} 把每个 \item 前的默认圆点改为空方框。
+\subsection{本章检查清单}
+
+\begin{itemize}[label={$\square$}]
+    \item 我能指出 \texttt{\textbackslash documentclass} 用来选择文档类型和选项。
+    \item 我能写出从 \texttt{\textbackslash begin\{document\}} 到 \texttt{\textbackslash end\{document\}} 的文档环境。
+    \item 我知道本项目的根文件是 \texttt{main.tex}。
+    \item 我知道停止输入约 1 秒会自动保存，并触发默认的 XeLaTeX 配方。
+    \item 我会使用 \texttt{Command+Option+B} 立即手工编译。
+    \item 我会使用 \texttt{Command+Option+V} 在右侧打开 PDF 预览。
+    \item 我会使用 \texttt{Command+Option+J} 从源码定位到 PDF。
+    \item 我会双击 PDF 返回源码，并知道这两个方向合称 SyncTeX。
+\end{itemize}

@@ -1,0 +1,197 @@
+% !TEX root = ../main.tex
+% 本文件是文章教程的第八章；\section 在 main.pdf 中生成章节标题，并不把当前文档切换成 Beamer 类。
+\section{Beamer：制作演示文稿}
+
+% learningbox 中用 \texttt 显示环境或选项名称，用 \verb|...| 显示包含反斜杠的完整命令源码。
+\begin{learningbox}{学习目标 / Learning goals}
+学完本章后，你将能创建一个独立的 Beamer 根文件，用 \texttt{frame} 组织页面，
+添加标题、目录、信息块、公式、图片和双栏内容，使用 \verb|\pause| 控制逐项显示，
+并在含逐字源码的页面上正确使用 \texttt{fragile} 选项。
+\end{learningbox}
+
+% \subsection 只生成文章中的二级标题；独立幻灯片必须从 beamer-demo.tex 的 \documentclass{beamer} 开始编译。
+\subsection{Beamer 是什么}
+
+Beamer 是 LaTeX 的演示文稿文档类。普通文章围绕连续段落和自动分页组织内容，
+而 Beamer 围绕一张张幻灯片组织内容；每张幻灯片应只表达一个清楚的重点。
+它仍然使用熟悉的命令、数学环境、图片和交叉引用，因此可以复用前面章节的写作方法。
+
+本项目中的 \texttt{beamer-demo.tex} 是独立根文件，不由 \texttt{main.tex} 载入。
+编辑演示文稿时应直接编译它，得到对应的 \texttt{beamer-demo.pdf}。
+
+% codeblock 原样展示完整 Beamer 文档；frame 环境生成一张逻辑幻灯片，\frametitle 设置该页标题。
+\subsection{frame 是基本页面}
+
+下面是一个完整、可单独保存和编译的最小示例。它位于源码展示环境中，
+只供阅读，不会执行其中的命令。
+
+\begin{codeblock}
+\documentclass[aspectratio=169,11pt]{beamer}
+\usepackage[UTF8]{ctex}
+\usetheme{Boadilla}
+
+\begin{document}
+\begin{frame}
+    \frametitle{第一张幻灯片}
+    这里是内容。
+\end{frame}
+\end{document}
+\end{codeblock}
+
+\verb|\documentclass{beamer}| 选择演示文稿文档类；\texttt{aspectratio=169}
+把画布设为现代宽屏常用的 $16:9$；\texttt{11pt} 是正文基准字号。
+每个 \texttt{frame} 环境产生一个逻辑页面，\verb|\frametitle| 设置该页面的标题。
+只有放在 \verb|\begin{document}| 与 \verb|\end{document}| 之间的 frame 才会输出。
+
+% \title、\author、\date 先保存元数据；\titlepage 和 \tableofcontents 分别在不同 frame 中把标题页和目录页输出。
+\subsection{标题页和目录页}
+
+标题、作者和日期通常在导言区定义，再分别用 \verb|\titlepage| 和
+\verb|\tableofcontents| 输出。标题页加上 \texttt{plain} 选项后会隐藏页眉、页脚，
+把视觉注意力集中在标题上。
+
+\begin{codeblock}
+\title{我的 Beamer 演示}
+\author{演示者姓名}
+\date{\today}
+
+\begin{frame}[plain]
+    \titlepage
+\end{frame}
+
+\begin{frame}{目录}
+    \tableofcontents
+\end{frame}
+\end{codeblock}
+
+目录内容来自 \verb|\section| 和 \verb|\subsection|。与文章一样，修改章节后应让
+LaTeXmk 完成必要的多轮编译，使目录和导航信息稳定。
+
+% Beamer 的 \section 会更新目录和导航信息；\AtBeginSection 注册钩子，使每次开始新章节时先执行一段指定源码。
+\verb|\section{章节标题}| 建立正式章节，并把标题写入目录、页眉页脚等导航信息。
+如果希望观众在进入新主题前先看到清楚的“章节开始页”，可在导言区注册专用钩子。
+\texttt{AtBeginSection} 钩子会在每次执行 \texttt{section} 时先运行指定内容。
+
+% 钩子里的 frame[plain] 隐藏常规页眉页脚，\sectionpage 读取当前章节标题并自动生成章节过渡页。
+\begin{codeblock}
+\AtBeginSection[]{
+    \begin{frame}[plain]
+        \sectionpage
+    \end{frame}
+}
+\end{codeblock}
+
+三条命令的分工如下：
+\begin{itemize}
+    \item \texttt{AtBeginSection} 决定何时插入。
+    \item \texttt{frame} 创建逻辑页面。
+    \item \texttt{sectionpage} 显示当前章节标题。
+\end{itemize}
+由于每个正式 section 都会自动增加一个 frame，规划总页数时要把这些章节开始页计算在内；
+示例中的 \texttt{plain} 只改变版式，不会取消计数。
+
+% block、exampleblock、alertblock 都接收一个花括号标题参数，并用不同主题颜色排版环境内部的说明内容。
+\subsection{block、exampleblock 与 alertblock}
+
+Beamer 提供三种常用信息块。选择环境时应依据内容语义，而不是只为了颜色：
+普通说明用 \texttt{block}，正向示例用 \texttt{exampleblock}，必须注意的风险用
+\texttt{alertblock}。
+
+\begin{codeblock}
+\begin{block}{普通信息}
+这是普通说明。
+\end{block}
+
+\begin{exampleblock}{示例}
+这是示例内容。
+\end{exampleblock}
+
+\begin{alertblock}{提醒}
+这是重要提醒。
+\end{alertblock}
+\end{codeblock}
+
+% aspectratio=169 在文档类加载时设定 16:9 画布；usetheme 控制结构，usecolortheme 控制配色，setbeamertemplate 清空导航图标。
+\subsection{主题、导航和画面比例}
+
+主题控制标题栏、页脚和列表等整体结构，颜色主题只调整配色。独立示例选择
+\texttt{Boadilla} 主题和 \texttt{seahorse} 颜色主题，并移除投影时通常不需要的
+导航图标：
+
+\begin{codeblock}
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Boadilla}
+\usecolortheme{seahorse}
+\setbeamertemplate{navigation symbols}{}
+\end{codeblock}
+
+\texttt{aspectratio=169} 必须写在文档类选项中，因为它决定整份演示文稿的画布比例。
+主题命令放在导言区，可以保证所有 frame 使用一致样式。先确定清楚、稳定的结构，
+再少量调整颜色，通常比逐页手工设置更容易维护。
+
+% 每个 \pause 从该位置新增一个覆盖层；同一个 frame 因两次 pause 输出三张连续 PDF 页面，后页保留前页已显示的内容。
+\subsection{逐项显示}
+
+\verb|\pause| 会从当前位置建立一个新的覆盖层。演示时，观众先看到第一项，
+继续翻页后依次看到后续内容：
+
+\begin{codeblock}
+\begin{frame}{逐项显示}
+    \begin{itemize}
+        \item 先提出问题。
+        \pause
+        \item 再展示方法。
+        \pause
+        \item 最后给出结论。
+    \end{itemize}
+\end{frame}
+\end{codeblock}
+
+这个源码只有一个逻辑 frame，却会在 PDF 中形成三个物理页面。覆盖层适合控制讲解节奏，
+但不应把每个短句都拆开，否则翻页次数会妨碍理解。
+
+% frame 的 [fragile] 选项允许内部使用 verbatim 等逐字环境；没有此选项时，反斜杠和花括号源码常导致页面读取失败。
+\subsection{fragile frame 与代码}
+
+逐字源码包含大量反斜杠和花括号，LaTeX 必须先把整个 frame 写入临时文件再读取。
+因此，只要 frame 中使用 \texttt{verbatim} 一类逐字环境，就要在 frame 选项中添加
+\texttt{fragile}；遗漏它通常会导致编译错误。
+
+\begin{codeblock}
+\begin{frame}[fragile]{最小源码}
+    \begin{verbatim}
+    \begin{frame}
+        \frametitle{示例页面}
+        这里是内容。
+    \end{frame}
+    \end{verbatim}
+\end{frame}
+\end{codeblock}
+
+\texttt{fragile} 不是对所有页面都必需的装饰选项，只应加在确实含逐字源码的 frame 上。
+这样既表达了页面的特殊读取需求，也让问题定位更直接。
+
+% 下面的 latexmk 命令放在 codeblock 中；-xelatex 选择引擎，其余选项负责 SyncTeX、不中断报错和带文件行号的日志。
+\subsection{阅读 beamer-demo.tex}
+
+打开 \texttt{beamer-demo.tex} 后，先读导言区中的文档类、中文支持、主题、导航设置和
+\verb|\AtBeginSection| 钩子。源码手写八个 frame，两个正式 section 又各自自动生成一张
+章节开始页，所以共有十个逻辑 frame。数学公式与本地图片共用一页，源码/PDF 双栏与
+总结要点共用一页；第九个逻辑 frame 中的两次 \verb|\pause| 让它产生三个覆盖层，
+最终把十个逻辑 frame 扩展为十二个物理 PDF 页面。
+
+编译时在项目根目录运行：
+
+\begin{codeblock}
+/Library/TeX/texbin/latexmk -synctex=1 \
+  -interaction=nonstopmode -file-line-error \
+  -xelatex beamer-demo.tex
+\end{codeblock}
+
+% resultbox 中的数学写法 $16:9$ 会进入行内数学模式；命令和选项名称则用 verb 或 texttt 按源码样式显示。
+\begin{resultbox}
+\textbf{章末检查：}确认演示文稿使用独立根文件和 $16:9$ 画布；每个 frame 只表达一个重点；
+主题、颜色和导航在导言区统一设置；用 \verb|\AtBeginSection| 与 \verb|\sectionpage|
+生成章节开始页；\verb|\pause| 只服务于讲解顺序；含逐字源码的页面使用 \texttt{fragile}；
+最后直接编译 \texttt{beamer-demo.tex} 并检查生成的 PDF。
+\end{resultbox}

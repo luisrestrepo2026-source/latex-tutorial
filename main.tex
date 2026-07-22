@@ -1,0 +1,149 @@
+% !TEX root = main.tex
+%
+% \documentclass 选择整篇文档的基础类型；方括号依次启用 UTF-8 中文、12 磅字号、A4 纸张和 TeX Live 自带的 Fandol 中文字体。
+\documentclass[UTF8,12pt,a4paper,fontset=fandol]{ctexart}
+
+% geometry 的四个键分别设置左、右、上、下页边距；setspace 提供后面使用的行距命令。
+\usepackage[left=2.6cm,right=2.6cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{setspace}
+
+% 一次加载五个数学宏包：amsmath 管公式，amssymb 补充符号，amsthm 定义定理，mathtools 扩展数学排版，bm 生成粗体数学符号。
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+
+% graphicx 用于插图，booktabs 用于三线表，array 和 tabularx 扩展表格列，enumitem 调整列表格式。
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+
+% xcolor 定义和混合颜色；tcolorbox 的 most 选项一次启用常用扩展，以便制作可分页的彩色教学框。
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+
+% fvextra 提供 Verbatim 源码环境；它按原样显示反斜杠等字符，并允许长代码自动换行，不需要执行外部程序。
+\usepackage{fvextra}
+
+% biblatex 负责参考文献格式：backend=biber 指定处理程序，style=numeric 使用数字编号，sorting=none 按首次引用顺序排列。
+\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\addbibresource{references.bib}
+
+% hyperref 为目录、交叉引用和网址生成可点击链接；colorlinks=true 使用彩色文字而不是外框，下面三项分别设置内部链接、引用和网址颜色。
+\usepackage[
+    colorlinks=true,
+    linkcolor=blue!65!black,
+    citecolor=teal!65!black,
+    urlcolor=blue!65!black
+]{hyperref}
+
+% \definecolor 的 RGB 模式用三个 0～255 的数值定义颜色；这里为四类教学框统一准备蓝、绿、橙、红四种颜色。
+\definecolor{TutorialBlue}{RGB}{38,93,171}
+\definecolor{TutorialGreen}{RGB}{33,128,99}
+\definecolor{TutorialOrange}{RGB}{205,112,36}
+\definecolor{TutorialRed}{RGB}{176,54,54}
+
+% \DefineVerbatimEnvironment 新建 codeblock 环境：以小字号显示源码，添加单线边框和 2 mm 内边距，并允许在任意位置折断过长代码。
+\DefineVerbatimEnvironment{codeblock}{Verbatim}{
+    fontsize=\small,
+    frame=single,
+    framesep=2mm,
+    breaklines=true,
+    breakanywhere=true
+}
+
+% \newtcolorbox 定义可重复使用的彩色框；[1] 表示 learningbox 接收一个标题参数，#1 会被替换为调用时花括号中的标题。
+\newtcolorbox{learningbox}[1]{
+    breakable,
+    colback=blue!4,
+    colframe=TutorialBlue,
+    title={#1},
+    fonttitle=\bfseries
+}
+\newtcolorbox{resultbox}{
+    breakable,
+    colback=green!4,
+    colframe=TutorialGreen,
+    title={编译效果 / Build result},
+    fonttitle=\bfseries
+}
+\newtcolorbox{warningbox}{
+    breakable,
+    colback=orange!5,
+    colframe=TutorialOrange,
+    title={注意 / Note},
+    fonttitle=\bfseries
+}
+\newtcolorbox{errorbox}{
+    breakable,
+    colback=red!4,
+    colframe=TutorialRed,
+    title={常见错误 / Common error},
+    fonttitle=\bfseries
+}
+
+% \newtheorem 创建定理类环境；[section] 让定理按“节号.序号”编号，[theorem] 让引理和定义共用定理计数器。
+\theoremstyle{plain}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}[theorem]{引理}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{定义}
+
+% \onehalfspacing 设置 1.5 倍行距；\parskip 控制段落之间的竖直距离，\parindent 控制每段首行缩进。
+\onehalfspacing
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{2em}
+
+% \title、\author、\date 只保存标题信息；进入正文后还要调用 \maketitle 才会把它们排版出来，\today 会自动生成编译当天的日期。
+\title{LaTeX 从入门到数学公式与 Beamer}
+\author{VS Code + LaTeX Workshop 可编译教程}
+\date{\today}
+
+\begin{document}
+\pagestyle{plain}
+\maketitle
+
+\begin{abstract}
+本教程结合四份 LaTeX 课程讲义，使用一个真实、可编译的多文件项目，
+演示中文文档、文字排版、图表、数学公式、定理、参考文献和 Beamer。
+建议在 VS Code 左侧阅读源码，在右侧对照生成的 PDF。
+\end{abstract}
+
+\tableofcontents
+\clearpage
+
+% \input 会把指定文件的源码插入当前位置继续编译；省略 .tex 扩展名即可，实际主文件仍然是 main.tex。
+\input{sections/01-getting-started}
+
+\clearpage
+% \clearpage 先排出尚未处理的浮动体再换页，随后 \input 从新页载入第二章源码。
+\input{sections/02-document-structure}
+
+\clearpage
+% 这里载入第三章；各章节文件不写 \documentclass 和 document 环境，统一继承主文件的设置。
+\input{sections/03-text-formatting}
+
+\clearpage
+% 相对路径从主文件所在目录计算，因此 sections 文件夹中的第四章可直接用此路径载入。
+\input{sections/04-tables-and-figures}
+
+\clearpage
+% 连续使用 \clearpage 和 \input，可保证第五章另起一页，同时仍属于同一份文档和同一套编号体系。
+\input{sections/05-mathematics}
+
+\clearpage
+% 第六章会使用导言区预先加载的数学宏包、定理环境和参考文献设置，章节文件无需再次加载。
+\input{sections/06-theorems-and-references}
+
+\clearpage
+% 将章节拆成独立文件只改变源码组织方式；\input 后的内容在编译时仍像写在 main.tex 中一样连续排版。
+\input{sections/07-large-projects}
+
+\clearpage
+% 此处载入的是文章中的 Beamer 教程章节；真正的幻灯片由独立主文件 beamer-demo.tex 单独编译。
+\input{sections/08-beamer}
+
+\clearpage
+% \printbibliography 在当前位置输出正文实际引用过的文献；可选参数 title 修改参考文献列表的标题。
+\printbibliography[title={参考文献}]
+
+\end{document}

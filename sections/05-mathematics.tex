@@ -1,0 +1,150 @@
+% !TEX root = ../main.tex
+%
+% \section 创建数学基础这一章；LaTeX 会根据它在全文中的位置自动确定章号和目录页码。
+\section{数学基础：从行内公式到分段函数}
+
+% learningbox 使用主文件定义的样式，花括号内是框标题，begin 与 end 之间是学习目标正文。
+\begin{learningbox}{学习目标 / Learning goals}
+学完本章后，你将能区分文字模式与数学模式，选择行内、行间或编号公式，
+并正确输入上下标、分式、根式、运算符、希腊字母、定界符、数组和分段函数。
+\end{learningbox}
+
+% 一对美元符号 $...$ 打开和关闭行内数学模式；变量、上下标和数学符号必须放在这个范围内解释。
+\subsection{文字模式与数学模式}
+
+普通中文和英文写在文字模式中；变量、运算符和数学关系应放进数学模式。
+例如，下面句子中的公式使用一对美元符号进入和退出行内数学模式：
+
+质能方程 $E=mc^2$ 位于正文之中。
+
+数学模式会把字母默认排成数学变量的斜体，并按照公式规则解释上标、下标和空格。
+因此源码中的 \verb|^|、\verb|_| 和 \verb|\alpha| 等写法不能随意放在普通正文里。
+
+% \[...\] 生成无编号行间公式；equation 生成带编号公式，内部的 label 保存该公式编号供 eqref 引用。
+\subsection{行内、行间与编号公式}
+
+短公式适合放在正文中；需要突出或结构较大的公式适合单独成行。
+推荐使用 LaTeX 的 \verb|\[...\]| 形式书写无编号行间公式：
+
+\[
+    e^{i\pi}+1=0
+\]
+
+需要编号和交叉引用时，使用 \texttt{equation} 环境，并把 \verb|\label|
+放在环境内部：
+
+\begin{equation}
+    F=ma
+    \label{eq:newton-second-law}
+\end{equation}
+
+公式~\eqref{eq:newton-second-law} 是牛顿第二定律。引用标签而不是手写编号，
+以后增删公式时编号会自动更新。
+
+% 旧式双美元符号被放在 codeblock 中原样显示，不会真正进入数学模式；正式文档应改用 \[...\] 或 equation。
+\begin{errorbox}
+下面的旧式写法只作为惰性源码展示，不会执行：
+\begin{codeblock}
+$$
+    e^{i\pi}+1=0
+$$
+\end{codeblock}
+它不属于推荐的 LaTeX 文档写法，间距和错误检查也不如标准环境一致。
+无编号行间公式请使用 \verb|\[...\]|，需要编号时请使用 \texttt{equation}。
+\end{errorbox}
+
+% ^ 写上标，_ 写下标；多个字符必须用花括号分组，\frac、\sqrt、\sum、\int 分别生成分式、根式、求和与积分。
+\subsection{上下标、分式和根式}
+
+上标用 \verb|^|，下标用 \verb|_|；当内容不止一个字符时，要用花括号分组。
+
+\[
+    x_i^2,\qquad
+    \frac{a+b}{c},\qquad
+    \sqrt[n]{x},\qquad
+    \sum_{i=1}^{n} i,\qquad
+    \int_0^1 x^2\,\mathrm{d}x
+\]
+
+\verb|\frac{分子}{分母}| 生成分式，\verb|\sqrt[n]{x}| 生成 $n$ 次根式。
+求和与积分的上下限也分别由下标和上标给出。
+
+% \sin、\cos、\ln、\lim 是预定义运算符，会使用直立字体和正确间距；上下限仍用 _ 与 ^ 指定。
+\subsection{求和、积分、极限和函数}
+
+LaTeX 为常用函数提供了 \verb|\sin|、\verb|\cos|、\verb|\ln| 和
+\verb|\lim| 等命令。它们会把函数名排成直立字体，并自动提供合适间距；若直接输入
+斜体字母，读者可能把它误解为若干变量的乘积。
+
+\[
+    \sin^2\theta+\cos^2\theta=1,\qquad
+    \ln e=1,\qquad
+    \lim_{x\to 0}\frac{\sin x}{x}=1
+\]
+
+积分中的微分符号写成 \verb|\mathrm{d}| 很有用，因为这里的 $\mathrm{d}$
+是直立的运算记号，不是变量 $d$；前面的 \verb|\,| 则加入一小段易读的间距。
+
+% 希腊字母用反斜杠加名称输入；\mathbb 生成黑板粗体，\mathbf 加粗拉丁字母，\bm 还能加粗希腊字母等数学符号。
+\subsection{希腊字母与数学字体}
+
+希腊字母使用命令输入，例如小写 $\alpha$、$\beta$ 和大写 $\Gamma$。
+\verb|\mathbb| 常用于数集，\verb|\mathbf| 可把拉丁字母排成粗体，
+\verb|\bm| 则也能可靠地加粗希腊字母等数学符号。
+
+\[
+    \alpha+\beta\in\mathbb{R},\qquad
+    \mathbf{x}=(x_1,x_2),\qquad
+    \bm{\alpha}=(\alpha_1,\alpha_2),\qquad
+    \Gamma(n)=(n-1)!
+\]
+
+% \left 与 \right 必须配对并自动调整括号大小；array 用列格式和 & 排列矩阵，cases 自动生成分段函数的左花括号。
+\subsection{定界符、数组和分段函数}
+
+\verb|\left| 与 \verb|\right| 会让成对定界符随内部内容自动伸缩。
+\texttt{array} 环境使用与表格相似的列格式和对齐符号，适合在数学模式中排列元素：
+
+\[
+    A=\left[
+    \begin{array}{cc}
+        1 & 2 \\
+        3 & 4
+    \end{array}
+    \right]
+\]
+
+\texttt{cases} 环境会生成左花括号并按条件对齐，特别适合定义分段函数：
+
+\[
+    \left(
+    \frac{a}{b}
+    \right),
+    \qquad
+    |x|=
+    \begin{cases}
+        x, & x\ge 0,\\
+        -x, & x<0.
+    \end{cases}
+\]
+
+% 数学模式会忽略普通空格；\text{...} 插入正常文字，\, 加小间距，\quad 加较宽间距。
+\subsection{数学公式中的文字与间距}
+
+数学模式会忽略源码中的普通空格。需要短文字说明时使用 \verb|\text{...}|，
+需要精细间距时使用 \verb|\,|、\verb|\quad| 等命令：
+
+\[
+    f(x)=0\quad\text{当且仅当}\quad x=0,
+    \qquad
+    \int_a^b f(x)\,\mathrm{d}x
+\]
+
+这里的 \verb|\text{当且仅当}| 保留了正常文字字体和中文间距，
+而积分号后的 \verb|\,| 把被积函数与微分符号清楚地区分开。
+
+% 章末 learningbox 中的 \texttt{cases} 只改变单词字体；真正的 cases 环境必须写在数学模式内部。
+\begin{learningbox}{本章检查 / Chapter check}
+我能根据上下文选择行内、行间或编号公式，用语义化命令输入函数、微分符号和数学字体，
+并能写出自动伸缩定界符、数学数组以及可编译的 \texttt{cases} 分段函数。
+\end{learningbox}

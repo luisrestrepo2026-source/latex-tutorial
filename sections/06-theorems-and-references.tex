@@ -1,0 +1,134 @@
+% !TEX root = ../main.tex
+%
+% \section 生成本章标题；自动编号会继续沿用前文章节计数，不需要在标题中手写数字。
+\section{数学进阶：对齐、定理与参考文献}
+
+% learningbox 内的 \texttt 把环境名称显示为等宽字体，便于区分正文说明和要输入的 LaTeX 名称。
+\begin{learningbox}{学习目标 / Learning goals}
+学完本章后，你将能用 \texttt{align}、\texttt{split}、矩阵和子公式组织复杂数学内容，
+使用定义、定理与证明环境，并通过标签和 BibLaTeX 维护交叉引用与参考文献。
+\end{learningbox}
+
+% align 用 & 标出各行共同的对齐点，用双反斜杠换行；默认每行独立编号，label 可保存对应行的编号。
+\subsection{align 多行公式}
+
+\texttt{align} 环境用 \verb|&| 标记对齐位置，常把它放在等号之前；
+每行末尾的 \verb|\\| 开始下一行。下面两行各自带有标签，之后可以独立引用。
+
+\begin{align}
+    (a+b)^2 &= a^2+2ab+b^2, \label{eq:square}\\
+    (a-b)^2 &= a^2-2ab+b^2. \label{eq:difference-square}
+\end{align}
+
+例如，公式~\eqref{eq:square} 给出和的平方，公式~\eqref{eq:difference-square}
+给出差的平方。需要取消某一行的编号时，可以在该行末尾使用 \verb|\notag|。
+
+% eqnarray 旧写法被放进 codeblock，因此只展示源码而不执行；新文档应使用间距更准确、编号控制更灵活的 align。
+\begin{warningbox}
+下面是只用于辨认旧源码的惰性示例：
+\begin{codeblock}
+\begin{eqnarray}
+    a + b & = & b + a \\
+    ab    & = & ba
+\end{eqnarray}
+\end{codeblock}
+这种写法会在关系符周围产生不理想的间距，也不便于细致控制编号。
+新文档应使用 \texttt{align} 环境，并只放置一个用于对齐的 \verb|&|。
+\end{warningbox}
+
+% 外层 equation 只生成一个编号，内层 split 用 & 对齐并用双反斜杠拆行，适合“多行推导共用一个编号”。
+\subsection{split 与长公式}
+
+当整个推导只需要一个编号时，可以把 \texttt{split} 放进 \texttt{equation}：
+
+\begin{equation}
+\begin{split}
+    (x+y+z)^2
+        &= (x+y)^2+2(x+y)z+z^2 \\
+        &= x^2+y^2+z^2+2xy+2xz+2yz.
+\end{split}
+\label{eq:three-term-square}
+\end{equation}
+
+这里的两行共享公式~\eqref{eq:three-term-square} 的一个编号。
+外层 \texttt{equation} 管理编号，内层 \texttt{split} 管理换行和对齐。
+
+% pmatrix 自动添加圆括号；内部每行用 & 分列、双反斜杠分行，并且整个矩阵必须处于数学模式中。
+\subsection{矩阵}
+
+\texttt{pmatrix} 适合圆括号矩阵；类似地，\texttt{bmatrix} 会生成方括号。
+矩阵内部的排列方式和表格相似，但它必须位于数学模式中。
+
+\[
+    A=
+    \begin{pmatrix}
+        1 & 2\\
+        3 & 4
+    \end{pmatrix},
+    \qquad
+    \det(A)=-2.
+\]
+
+这里的 \verb|\det| 会把行列式函数名排成直立字体，\verb|\qquad|
+则在矩阵和计算结果之间加入易读的水平间距。
+
+% subequations 为内部公式添加共同主编号和字母子编号；把 label 写在外层 begin 后，可用一个标签引用整组。
+\subsection{子公式}
+
+一组密切相关的公式可以放进 \texttt{subequations}。外层标签记录整组编号，
+内部的 \texttt{align} 负责逐行排列：
+
+\begin{subequations}\label{eq:newton-system}
+\begin{align}
+    x(t) &= x_0+v_0t+\frac{1}{2}at^2,\\
+    v(t) &= v_0+at.
+\end{align}
+\end{subequations}
+
+式组~\eqref{eq:newton-system} 把匀加速运动的位置与速度公式归在同一个主编号下。
+若还要分别引用子公式，可在各行继续添加不同的 \verb|\label|。
+
+% definition 和 theorem 由主文件的 \newtheorem 创建；定理后的方括号给出名称，proof 结束时自动添加证毕符号。
+\subsection{定理、定义与证明}
+
+导言区已经用 \texttt{amsthm} 定义了本教程的 \texttt{definition} 和
+\texttt{theorem} 环境；\texttt{proof} 则由宏包直接提供。
+
+\begin{definition}
+若一个大于 1 的自然数，其正因数只有 1 和它自身，则称它为素数。
+\end{definition}
+
+\begin{theorem}[勾股定理]
+直角三角形两条直角边满足 $a^2+b^2=c^2$。
+\end{theorem}
+
+\begin{proof}
+这里用一个简短文字说明证明环境的排版形式。
+\end{proof}
+
+方括号中的文字为定理补充名称；证明环境结束时会自动排出证毕符号。
+
+% \eqref{标签} 输出带圆括号的公式编号，\pageref{标签} 输出该标签所在页码；二者都依赖前面定义的 label。
+\subsection{公式和页码交叉引用}
+
+公式~\eqref{eq:square} 位于第~\pageref{eq:square} 页，
+而式组~\eqref{eq:newton-system} 由一个标签代表整组公式。
+\verb|\eqref{...}| 会自动加上公式编号所需的圆括号，
+\verb|\pageref{...}| 则适合在长文档中提示目标所在页。
+标签名中的 \texttt{eq:} 前缀也能帮助读者一眼识别引用对象的类型。
+
+% \cite 的花括号内填写 references.bib 中的文献键；latexmk 会在需要时调用 Biber，再由主文件的 printbibliography 输出文献表。
+\subsection{BibLaTeX 与 Biber}
+
+Knuth 对文学编程的系统论述和 Lamport 的 LaTeX 教材都是理解排版工作流的经典资料
+\cite{knuth1984literate,lamport1994latex}。
+正文中的 \verb|\cite{...}| 只写稳定的文献键；作者、标题、年份等完整数据保存在
+\texttt{references.bib} 中。\texttt{biblatex} 负责引用样式，Biber 读取数据库并解析引用，
+最后由主文档中的 \verb|\printbibliography| 输出正文实际引用的条目。
+
+% 章末 learningbox 中用 \verb|...| 原样显示带花括号的命令，竖线只是 verb 命令的边界，不会出现在 PDF 中。
+\begin{learningbox}{本章检查 / Chapter check}
+我能选择 \texttt{align}、\texttt{split}、矩阵或子公式组织数学内容，
+能用定理与证明环境表达数学论述，并能通过 \verb|\label|、\verb|\eqref|、
+\verb|\pageref| 和 \verb|\cite| 维护自动更新的引用。
+\end{learningbox}

@@ -1,0 +1,140 @@
+% !TEX program = xelatex
+% \documentclass 的 aspectratio=169 设置 16:9 画布，11pt 设置正文基准字号；后续命令依次加载中文、数学、图片、主题、配色并隐藏导航图标。
+\documentclass[aspectratio=169,11pt]{beamer}
+\usepackage[UTF8]{ctex}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usetheme{Boadilla}
+\usecolortheme{seahorse}
+\setbeamertemplate{navigation symbols}{}
+
+\title{用 Beamer 制作清晰的演示文稿}
+\subtitle{一个含十个逻辑 frame 的可编译示例}
+\author{LaTeX 教程}
+\institute{VS Code + LaTeX Workshop}
+\date{\today}
+
+% \AtBeginSection 注册章节钩子；每次执行 \section 前都会自动插入一个 plain frame，并由 \sectionpage 显示当前章节标题。
+\AtBeginSection[]{
+    \begin{frame}[plain]
+        \sectionpage
+    \end{frame}
+}
+
+% \newenvironment 定义 codeslide；开始时打开 fragile frame，environment=codeslide 告诉逐字内容读取器以 \end{codeslide} 作为结束边界。
+\newenvironment{codeslide}
+    {\begin{frame}[fragile,environment=codeslide]}
+    {\end{frame}}
+
+\begin{document}
+
+% frame 的 plain 选项隐藏常规页眉页脚；\titlepage 会读取导言区中的标题、副标题、作者、机构和日期并生成标题页。
+\begin{frame}[plain]
+    \titlepage
+\end{frame}
+
+% \begin{frame}{内容概览} 把花括号内容直接设为页标题；\tableofcontents 根据后面的 section 命令生成目录。
+\begin{frame}{内容概览}
+    \tableofcontents
+\end{frame}
+
+% \section 写入目录和导航信息，同时触发前面定义的 AtBeginSection 钩子，自动增加一张章节过渡页。
+\section{结构与表达}
+
+% frame 的必选参数是页标题；内部 itemize 用多个 \item 生成无序要点，适合逐条呈现并列内容。
+\begin{frame}{为什么使用 Beamer}
+    \begin{itemize}
+        \item 源码与内容分离，整份演示保持一致样式。
+        \item 数学公式、交叉引用和图片沿用熟悉的 LaTeX 写法。
+        \item 主题、覆盖层与结构命令共同服务于现场讲解。
+    \end{itemize}
+\end{frame}
+
+% block、exampleblock、alertblock 都把花括号内容作为块标题，并由当前 Beamer 主题自动使用不同配色。
+\begin{frame}{用信息块组织重点}
+    \begin{block}{普通信息}
+        每张幻灯片围绕一个清楚的中心观点组织内容。
+    \end{block}
+    \begin{exampleblock}{示例}
+        用三到五个短要点替代一整段连续文字。
+    \end{exampleblock}
+    \begin{alertblock}{提醒}
+        字号过小会让后排观众难以阅读。
+    \end{alertblock}
+\end{frame}
+
+% 第二个 \section 再次更新目录和导航，并再次触发章节钩子；自动生成的过渡页也计入 PDF 页数。
+\section{综合示例}
+
+% columns 的 T 选项让两栏顶部对齐；两个 column 分别占正文宽度的 49% 和 47%，右栏图片同时限制最大宽度与高度并保持比例。
+\begin{frame}{数学公式与本地图片}
+    \begin{columns}[T,onlytextwidth]
+        \begin{column}{0.49\textwidth}
+            对于二次方程 $ax^2+bx+c=0$，其解为
+            \[
+                x=\frac{-b\pm\sqrt{b^2-4ac}}{2a},
+                \qquad a\ne 0.
+            \]
+            判别式 $b^2-4ac$ 决定实数解的数量。
+        \end{column}
+        \begin{column}{0.47\textwidth}
+            \centering
+            \includegraphics[width=0.96\linewidth,height=0.48\textheight,keepaspectratio]{figures/example-figure.pdf}
+
+            \small 同一份矢量 PDF 可在文章和演示中复用。
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% 双栏环境结束后仍在同一 frame 中继续排版总结 block；最后的 \centering 会让该页剩余文字居中。
+\begin{frame}{双栏比较与总结}
+    \begin{columns}[T,onlytextwidth]
+        \begin{column}{0.47\textwidth}
+            \begin{block}{源码}
+                \begin{itemize}
+                    \item 保存内容与结构命令
+                    \item 适合版本管理和复用
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.47\textwidth}
+            \begin{exampleblock}{PDF}
+                \begin{itemize}
+                    \item 呈现稳定排版结果
+                    \item 适合投影和分享
+                \end{itemize}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+    \begin{block}{总结要点}
+        用 frame 划分重点；用主题、信息块、公式、图片和双栏组织表达；
+        只在需要时使用覆盖层，并为逐字源码添加 fragile。
+    \end{block}
+    \centering 从简单页面开始，逐步建立自己的演示模板。
+\end{frame}
+
+% enumerate 生成编号列表；两次 \pause 把同一逻辑 frame 分为三个覆盖层，因此编译后对应三张连续 PDF 页面。
+\begin{frame}{逐项显示控制讲解节奏}
+    \begin{enumerate}
+        \item 先提出需要解决的问题。
+        \pause
+        \item 再展示采用的方法。
+        \pause
+        \item 最后给出结论与下一步。
+    \end{enumerate}
+\end{frame}
+
+% codeslide 自动提供 fragile frame；其中 verbatim 按原样显示嵌套的 frame 源码，内部的命令不会被执行。
+\begin{codeslide}
+    \frametitle{fragile frame 展示源码}
+    \begin{verbatim}
+    \begin{frame}
+        \frametitle{最小页面}
+        这里是内容。
+    \end{frame}
+    \end{verbatim}
+
+    \small 含逐字源码的页面必须添加 \texttt{fragile} 选项。
+\end{codeslide}
+
+\end{document}
