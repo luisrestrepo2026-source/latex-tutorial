@@ -1,0 +1,25 @@
+# Creative Commons Attribution 4.0 International
+
+Except where otherwise noted, the tutorial content in this repository is
+licensed under the Creative Commons Attribution 4.0 International License
+(CC BY 4.0).
+
+This license applies to:
+
+- the prose in `README.md` and `docs/`;
+- explanatory prose and comments in the LaTeX tutorial files;
+- rendered tutorial PDFs; and
+- preview images under `docs/images/`.
+
+It does not replace the MIT License that applies to code and configuration as
+described in [LICENSE-CODE](LICENSE-CODE) and [LICENSE](LICENSE).
+
+When sharing or adapting the licensed content, give appropriate credit to
+Tamarisk-Du, link to this repository and the license, and indicate whether you
+made changes. Do not imply endorsement by the author.
+
+License deed: https://creativecommons.org/licenses/by/4.0/
+
+Legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+
+Copyright (c) 2026 Tamarisk-Du

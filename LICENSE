@@ -1,0 +1,13 @@
+# License map
+
+This repository uses two licenses because it contains both reusable code and
+tutorial content.
+
+- Code and configuration are licensed under the MIT License. See
+  [LICENSE-CODE](LICENSE-CODE).
+- Tutorial prose and media are licensed under the Creative Commons
+  Attribution 4.0 International License (CC BY 4.0). See
+  [LICENSE-CONTENT](LICENSE-CONTENT).
+
+For mixed LaTeX files, commands and example code are covered by MIT, while
+explanatory prose and comments are covered by CC BY 4.0.

@@ -8,7 +8,7 @@
     "latex-workshop.latex.recipe.default": "first",
     "latex-workshop.latex.tools": [
         {
-            "name": "latexmk-xelatex-build",
+            "name": "latexmk-xelatex",
             "command": "latexmk",
             "args": [
                 "-xelatex",
@@ -18,28 +18,9 @@
                 "-outdir=%OUTDIR%",
                 "%DOC%"
             ]
-        },
-        {
-            "name": "latexmk-xelatex",
-            "command": "/Library/TeX/texbin/latexmk",
-            "args": [
-                "-synctex=1",
-                "-interaction=nonstopmode",
-                "-file-line-error",
-                "-xelatex",
-                "-outdir=%OUTDIR%",
-                "-auxdir=%AUXDIR%",
-                "%DOC%"
-            ]
         }
     ],
     "latex-workshop.latex.recipes": [
-        {
-            "name": "XeLaTeX with latexmk to build",
-            "tools": [
-                "latexmk-xelatex-build"
-            ]
-        },
         {
             "name": "latexmk (XeLaTeX)",
             "tools": [

@@ -23,6 +23,5 @@
 *.vrb
 *.xdv
 
-# Keep final PDFs from the build directory, but ignore its other outputs.
-build/*
-!build/*.pdf
+# Local compilation output is published through Actions and Releases.
+build/
